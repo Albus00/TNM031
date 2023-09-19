@@ -1,6 +1,15 @@
 import java.math.BigInteger;
 
-public class PrivateKey(dSent, nSent) {
-    BigInteger d = dSent;
-    BigInteger n = nSent;
+public class PrivateKey {
+    public final BigInteger d;
+    public final BigInteger n;
+
+    public PrivateKey(BigInteger dSent, BigInteger nSent) {
+        this.d = dSent;
+        this.n = nSent;
+    }
+
+    public String getKey() {
+        return (this.d + ", " + this.n);
+    }
 }

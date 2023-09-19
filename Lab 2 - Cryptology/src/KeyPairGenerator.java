@@ -4,17 +4,23 @@ import java.util.Random;
 public class KeyPairGenerator {
     private final BigInteger p;
     private final BigInteger q;
-    private final BigInteger phiN;
+    public final BigInteger phiN;
     private final BigInteger e;
+    private final BigInteger d;
     private final PublicKey pub;
     private final PrivateKey priv;
 
-    public KeyPairGenerator(BigInteger p, BigInteger q) {
+    public KeyPairGenerator(BigInteger pSent, BigInteger qSent) {
+        this.p = pSent;
+        this.q = qSent;
+
         // Calculate (p-1)(q-1)
         phiN = (p.subtract(BigInteger.ONE)).multiply(q.subtract(BigInteger.ONE));
 
-        // Generate e
-        e = generateRandE(phiN);
+        // Generate e and d
+        //e = generateRandE(phiN);
+        e = new BigInteger("9007");
+        d = e.modInverse(phiN);
 
         pub = new PublicKey(e, p.multiply(q));
         priv = new PrivateKey(d, p.multiply(q));
