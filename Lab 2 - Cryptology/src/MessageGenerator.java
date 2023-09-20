@@ -15,6 +15,18 @@ public class MessageGenerator {
     }
 
     public String decryptMsg(String msg) {
+        // Check if first number is cut, ex. 1xxx should be 01xxx
+        if (msg.length() % 2 != 0) {
+            msg = "0" + msg;
+        }
 
+        String translation = "";
+        while (msg.length() > 0) {
+            int letter = Integer.parseInt(msg.substring(0, 2));
+            translation += alphabet.charAt(letter - 1);
+            msg = msg.substring(2); // remove translated numbers from message
+        }
+
+        return translation;
     }
 }

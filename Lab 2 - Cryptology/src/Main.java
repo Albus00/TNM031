@@ -5,7 +5,6 @@ import java.math.BigInteger;
 
 
 public class Main {
-    private final String alphabet = "abcdefghijklmnopqrstuvwxyz";
     private static KeyPairGenerator keyGen;
     private static PrivateKey priv;
     public static PublicKey pub;
@@ -52,6 +51,10 @@ public class Main {
         BigInteger d = pub.e.modInverse(keyGen.phiN);
         System.out.println("d = " + d);
         BigInteger msgRec = c.modPow(d, pub.n);
+        String msgToTranslate = msgRec.toString();
+        System.out.println("Message before translation: " + msgToTranslate);
+        String message = gen.decryptMsg(msgToTranslate);
+        System.out.println("Recovered message: " + message);
 
     }
 }
