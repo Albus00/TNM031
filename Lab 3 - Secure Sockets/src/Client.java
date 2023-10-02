@@ -1,6 +1,8 @@
 import java.io.*;
 import java.net.*;
 import javax.net.ssl.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.*;
 
 public class Client {
@@ -9,8 +11,8 @@ public class Client {
     private int port;
     // This is not a reserved port number
     static final int DEFAULT_PORT = 8189;
-    static final String KEYSTORE = "LIUkeystore.ks";
-    static final String TRUSTSTORE = "LIUtruststore.ks";
+    static final String KEYSTORE = "client/LIUkeystore.ks";
+    static final String TRUSTSTORE = "client/LIUtruststore.ks";
     static final String STOREPASSWD1 = "123456";
     static final String STOREPASSWD2 = "abcdef";
     static final String ALIASPASSWD = "123456";
@@ -45,71 +47,76 @@ public class Client {
             socketFromServer = new BufferedReader( new InputStreamReader( client.getInputStream() ) );
             PrintWriter socketToServer = new PrintWriter( client.getOutputStream(), true );
 
-            printMenu();
-            String input = new BufferedReader(new InputStreamReader(System.in)).readLine();
-            int option = Integer.parseInt(input);
+            boolean exit = false;
 
-            socketToServer.println(option);
+            while (!exit) {
+                printMenu();
+                String input = new BufferedReader(new InputStreamReader(System.in)).readLine();
+                int option = Integer.parseInt(input);
 
+                socketToServer.println(option);
 
-            switch(option) {
-                case 1:
-                    System.out.println("Enter the file name: ");
-                    try
-                    {
-                        String fileName = new BufferedReader(new InputStreamReader(System.in)).readLine();
-                        System.out.println("Downloading the file from the server");
-                        socketToServer.println(fileName);
-                        String fileData = dataFromServer(socketFromServer);
-                        //createTextFile(fileName, fileData);
-                    }
-                    catch (Exception e)
-                    {
-                        System.out.println("There was an error when handling your request");
-                    }
-                    break;
-                case 2:
-                    System.out.println("Please the name of the file that you want to upload:");
-                    try {
-                        String fileName = new BufferedReader(new InputStreamReader(System.in)).readLine();
-                        String fileData= readFile(fileName);
-                        System.out.println("Uploading file to the server");
-                        socketToServer.println(fileName);
-                        socketToServer.println(fileData);
-                    }
-                    catch (Exception e) {
-                        System.out.println("There was an error when handling your request");
-                        e.printStackTrace();
-                    }
-                    break;
-                case 3:
-                    System.out.println("Please enter the name of the file you want to delete.");
-                    try {
-                        String fileName = new BufferedReader(new InputStreamReader(System.in)).readLine();
-                        System.out.println("Deleting file from the server");
-                        socketToServer.println(fileName);
-                    }
-                    catch (Exception e){
-                        System.out.println("There was an error when handling your request");
-                        e.printStackTrace();
-                    }
-                    break;
-                default:
-                    System.out.println("Wrong option, byebye");
-                    break;
+                switch(option) {
+                    case 1:
+                        // Download file
+                        System.out.println("Enter the file name: ");
+                        try
+                        {
+                            String fileName = new BufferedReader(new InputStreamReader(System.in)).readLine();
+                            System.out.println("Downloading the file from the server");
+                            socketToServer.println(fileName);
+                            String fileData = dataFromServer(socketFromServer);
+                            createTextFile(fileName, fileData);
+                        }
+                        catch (Exception e)
+                        {
+                            System.out.println("There was an error when handling your request");
+                        }
+                        break;
+                    case 2:
+                        // Upload file
+                        System.out.println("Please the name of the file that you want to upload:");
+                        try {
+                            String fileName = new BufferedReader(new InputStreamReader(System.in)).readLine();
+                            Path filePath = Path.of("client/" + fileName);
+                            String fileData = Files.readString(filePath);
+                            System.out.println("Uploading file to the server");
+                            socketToServer.println(fileName);
+                            socketToServer.println(fileData);
+                        }
+                        catch (Exception e) {
+                            System.out.println("There was an error when handling your request");
+                            e.printStackTrace();
+                        }
+                        break;
+                    case 3:
+                        // Delete file
+                        System.out.println("Please enter the name of the file you want to delete.");
+                        try {
+                            String fileName = new BufferedReader(new InputStreamReader(System.in)).readLine();
+                            System.out.println("Deleting file from the server");
+                            socketToServer.println(fileName);
+                        }
+                        catch (Exception e){
+                            System.out.println("There was an error when handling your request");
+                            e.printStackTrace();
+                        }
+                        break;
+                    case 4:
+                        System.out.println("Goodbye");
+                        exit = true;
+                        break;
+                    default:
+                        System.out.println("Wrong option, byebye");
+                        exit = true;
+                        break;
+                }
             }
-
-
-
         }
         catch( Exception x ) {
             System.out.println( x );
             x.printStackTrace();
         }
-    }
-
-    public void download() {
-
     }
 
     private String dataFromServer(BufferedReader socketFromServer)
@@ -134,7 +141,7 @@ public class Client {
         }
     }
 
-    private void createFile(String fileName, String data)
+    private void createTextFile(String fileName, String data)
     {
         String name = fileName;
         System.out.println(name);
@@ -143,6 +150,7 @@ public class Client {
             writer = new PrintWriter(name);
             writer.print(data);
             writer.close();
+            System.out.println("TEEEEST");
         }
         catch (Exception e)
         {
@@ -176,11 +184,11 @@ public class Client {
     }
 
     public void printMenu() {
-        System.out.println("SSL Lab 3 Menu, have fun!");
+        System.out.println("");
         System.out.println("1. Download file from server?");
         System.out.println("2. Upload file to server?");
         System.out.println("3. Delete file from server?");
-
+        System.out.println("4. Exit");
     }
 
     public static void main( String[] args ) {

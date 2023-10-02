@@ -10,8 +10,8 @@ public class Server {
 
     private int port;
     static final int DEFAULT_PORT = 8189;
-    static final String KEYSTORE = "LIUkeystore.ks";
-    static final String TRUSTSTORE = "LIUtruststore.ks";
+    static final String KEYSTORE = "client/LIUkeystore.ks";
+    static final String TRUSTSTORE = "client/LIUtruststore.ks";
     static final String STOREPASSWD1 = "123456";
     static final String STOREPASSWD2 = "abcdef";
     static final String ALIASPASSWD = "123456";
@@ -46,22 +46,26 @@ public class Server {
             BufferedReader in = new BufferedReader( new InputStreamReader( incoming.getInputStream() ) );
             PrintWriter out = new PrintWriter( incoming.getOutputStream(), true );
 
+
             String fileName;
             String fileData;
             int option = Integer.parseInt(in.readLine());
+            System.out.println(in.lines());
 
             switch(option) {
                 case 1:
                     System.out.println("User requested to download a file");
-
                     fileName = in.readLine();
                     fileData = readFile(fileName);
                     out.println(fileData);
                     break;
                 case 2:
                     System.out.println("User requested to upload a file");
+                    System.out.println(in);
                     fileName = in.readLine();
                     fileData = readStringFromClient(in);
+
+                    System.out.println(fileData);
 
                     download(fileName, fileData);
                     break;
@@ -85,12 +89,22 @@ public class Server {
 
     public void download(String fileName, String fileData) {
         String serverFileName = "server"+fileName;
-        System.out.println(serverFileName);
         PrintWriter writer;
+        System.out.println("jashdkasjhdkjashdkjhasd");
 
         try
         {
-            writer = new PrintWriter(serverFileName, "UTF-8");
+            // Create file
+            File myObj = new File(serverFileName);
+            if (myObj.createNewFile()) {
+                System.out.println("File created: " + myObj.getName());
+            } else {
+                System.out.println("File already exists.");
+            }
+
+            // Write data to file
+            FileWriter fileWriter = new FileWriter(serverFileName);
+            writer = new PrintWriter(fileWriter);
             writer.print(fileData);
             writer.close();
         }
@@ -99,14 +113,12 @@ public class Server {
             System.out.println("Error writing to file");
             e.printStackTrace();
         }
-
     }
 
     private String readFile(String fileName)
     {
         try
         {
-
             BufferedReader br = new BufferedReader(new FileReader(fileName));
             StringBuilder sb = new StringBuilder();
             String line = br.readLine();
