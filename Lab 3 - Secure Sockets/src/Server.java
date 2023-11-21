@@ -4,14 +4,16 @@
 
 import java.io.*;
 import javax.net.ssl.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.*;
 
 public class Server {
 
     private int port;
     static final int DEFAULT_PORT = 8189;
-    static final String KEYSTORE = "client/LIUkeystore.ks";
-    static final String TRUSTSTORE = "client/LIUtruststore.ks";
+    static final String KEYSTORE = "server/LIUkeystore.ks";
+    static final String TRUSTSTORE = "server/LIUtruststore.ks";
     static final String STOREPASSWD1 = "123456";
     static final String STOREPASSWD2 = "abcdef";
     static final String ALIASPASSWD = "123456";
@@ -46,7 +48,6 @@ public class Server {
             BufferedReader in = new BufferedReader( new InputStreamReader( incoming.getInputStream() ) );
             PrintWriter out = new PrintWriter( incoming.getOutputStream(), true );
 
-
             String fileName;
             String fileData;
             int option = Integer.parseInt(in.readLine());
@@ -55,15 +56,16 @@ public class Server {
             switch(option) {
                 case 1:
                     System.out.println("User requested to download a file");
-                    fileName = in.readLine();
+                    fileName = "server" + in.readLine();
+                    String path = "server/" + fileName;
                     fileData = readFile(fileName);
                     out.println(fileData);
                     break;
                 case 2:
                     System.out.println("User requested to upload a file");
-                    System.out.println(in);
+
                     fileName = in.readLine();
-                    fileData = readStringFromClient(in);
+                    fileData = in.readLine();
 
                     System.out.println(fileData);
 
@@ -90,12 +92,12 @@ public class Server {
     public void download(String fileName, String fileData) {
         String serverFileName = "server"+fileName;
         PrintWriter writer;
-        System.out.println("jashdkasjhdkjashdkjhasd");
 
         try
         {
             // Create file
-            File myObj = new File(serverFileName);
+            String path = "server/" + serverFileName;
+            File myObj = new File(path);
             if (myObj.createNewFile()) {
                 System.out.println("File created: " + myObj.getName());
             } else {
@@ -103,7 +105,7 @@ public class Server {
             }
 
             // Write data to file
-            FileWriter fileWriter = new FileWriter(serverFileName);
+            FileWriter fileWriter = new FileWriter(path);
             writer = new PrintWriter(fileWriter);
             writer.print(fileData);
             writer.close();
@@ -119,7 +121,7 @@ public class Server {
     {
         try
         {
-            BufferedReader br = new BufferedReader(new FileReader(fileName));
+            BufferedReader br = new BufferedReader(new FileReader("server/" + fileName));
             StringBuilder sb = new StringBuilder();
             String line = br.readLine();
 
@@ -141,7 +143,7 @@ public class Server {
     }
     public void delete(String name) {
         try {
-            File mFile = new File(name);
+            File mFile = new File("server/server" + name);
             mFile.delete();
             System.out.println("File deleted");
         }

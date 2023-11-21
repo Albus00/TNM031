@@ -143,44 +143,35 @@ public class Client {
 
     private void createTextFile(String fileName, String data)
     {
-        String name = fileName;
-        System.out.println(name);
         PrintWriter writer;
-        try {
-            writer = new PrintWriter(name);
-            writer.print(data);
-            writer.close();
-            System.out.println("TEEEEST");
-        }
-        catch (Exception e)
+        try
         {
-            System.out.println("Error writing to file: " + e.toString());
-            e.printStackTrace();
-        }
+            // Create file
+            String path = "client/" + fileName;
+            System.out.println("Downloading " + fileName + "...");
+            File newFile = new File(path);
 
-    }
-
-    private String readFile(String fileName)
-    {
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(fileName));
-            StringBuilder sb = new StringBuilder();
-            String line = br.readLine();
-
-            while(line!=null) {
-                sb.append(line);
-                sb.append(System.lineSeparator());
-                line = br.readLine();
+            boolean fileExists = false;
+            int fileExtra = 0;
+            if (newFile.createNewFile()) {
+                System.out.println("File created: " + newFile.getName());
+            }
+            else {
+                System.out.println("File " + newFile.getName() + " already exists.");
             }
 
-            return sb.toString();
+            // Write data to file
+            FileWriter fileWriter = new FileWriter(path);
+            writer = new PrintWriter(fileWriter);
+            writer.print(data);
+            writer.close();
         }
         catch (Exception e)
         {
-            System.out.println("There was an error handling your request." + e.toString());
+            System.out.println("Error writing to file");
             e.printStackTrace();
-            return null;
         }
+
     }
 
     public void printMenu() {

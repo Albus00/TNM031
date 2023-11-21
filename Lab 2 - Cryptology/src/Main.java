@@ -34,8 +34,20 @@ public class Main {
         System.out.println("Bob sends his public key to YOU");
         System.out.println("...");
 
-        System.out.print("Input message: ");
-        String msg = reader.readLine();
+        boolean msgCorrect = false;
+        String msg = "";
+        while (!msgCorrect) {
+            System.out.print("Input message: ");
+            msg = reader.readLine();
+
+            if (msg.length() > 8) {
+                System.out.println("Message too long, max 8 letters :)");
+            }
+            else {
+                msgCorrect = true;
+            }
+        }
+
 
         MessageGenerator gen = new MessageGenerator();
         BigInteger genMsg = new BigInteger(gen.generateMsg(msg));

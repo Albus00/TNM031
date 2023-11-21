@@ -1,5 +1,5 @@
 public class MessageGenerator {
-    private final String alphabet = "abcdefghijklmnopqrstuvwxyz";
+    private final String alphabet = "abcdefghijklmnopqrstuvwxyz 1234567890";
     public MessageGenerator() {}
 
     public String generateMsg(String msg) {
